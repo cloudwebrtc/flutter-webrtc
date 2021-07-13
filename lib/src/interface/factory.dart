@@ -5,6 +5,9 @@ import 'rtc_peerconnection.dart';
 import 'rtc_video_renderer.dart';
 
 abstract class RTCFactory {
+
+  Future setFactoryConfiguration(Map<String, dynamic> configuration);
+
   Future<RTCPeerConnection> createPeerConnection(
       Map<String, dynamic> configuration,
       [Map<String, dynamic> constraints]);

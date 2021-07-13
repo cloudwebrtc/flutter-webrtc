@@ -130,7 +130,7 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
     mPeerConnectionObservers.clear();
   }
 
-  private void ensureInitialized() {
+  private void ensureInitialized(ConstraintsMap constraintsMap) {
     if (mFactory != null) {
       return;
     }
@@ -153,8 +153,22 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
 
     getUserMediaImpl.audioDeviceModule = (JavaAudioDeviceModule) audioDeviceModule;
 
+    PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+
+    if(constraintsMap != null){
+      if(constraintsMap.hasKey("disableNetworkMonitor")){
+        options.disableNetworkMonitor = constraintsMap.getBoolean("disableNetworkMonitor");
+      }
+      if(constraintsMap.hasKey("disableEncryption")){
+        options.disableEncryption = constraintsMap.getBoolean("disableEncryption");
+      }
+      if(constraintsMap.hasKey("networkIgnoreMask")){
+        options.networkIgnoreMask = constraintsMap.getInt("networkIgnoreMask");
+      }
+    }
+
     mFactory = PeerConnectionFactory.builder()
-            .setOptions(new Options())
+            .setOptions(options)
             .setVideoEncoderFactory(new DefaultVideoEncoderFactory(eglContext, false, true))
             .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglContext))
             .setAudioDeviceModule(audioDeviceModule)
@@ -163,10 +177,21 @@ public class MethodCallHandlerImpl implements MethodCallHandler, StateProvider {
 
   @Override
   public void onMethodCall(MethodCall call, @NonNull Result notSafeResult) {
-    ensureInitialized();
+    if(mFactory == null && call.method.equals("setFactoryConfiguration")){
+      Map<String, Object> configuration = call.argument("configuration");
+      ConstraintsMap constraintsMap = new ConstraintsMap(configuration);
+      ensureInitialized(constraintsMap);
+    }
+    else{
+      ensureInitialized(null);
+    }
 
     final AnyThreadResult result = new AnyThreadResult(notSafeResult);
     switch (call.method) {
+      case "setFactoryConfiguration": {
+        result.success(null);
+        break;
+      }
       case "createPeerConnection": {
         Map<String, Object> constraints = call.argument("constraints");
         Map<String, Object> configuration = call.argument("configuration");

@@ -7,6 +7,10 @@ import '../interface/rtc_peerconnection.dart';
 import '../interface/rtc_video_renderer.dart';
 import 'factory_impl.dart';
 
+Future setFactoryConfiguration(Map<String, dynamic> configuration) async {
+  await RTCFactoryNative.instance.setFactoryConfiguration(configuration);
+}
+
 Future<RTCPeerConnection> createPeerConnection(
     Map<String, dynamic> configuration,
     [Map<String, dynamic> constraints = const {}]) async {

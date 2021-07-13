@@ -19,6 +19,14 @@ class RTCFactoryNative extends RTCFactory {
   static final RTCFactory instance = RTCFactoryNative._internal();
 
   @override
+  Future setFactoryConfiguration(Map<String, dynamic> configuration) async{
+    var _channel = WebRTC.methodChannel();
+    Map<String,dynamic> map = Map();
+    map["configuration"] = configuration;
+    await _channel.invokeMethod("setFactoryConfiguration",map);
+  }
+
+  @override
   Future<MediaStream> createLocalMediaStream(String label) async {
     var _channel = WebRTC.methodChannel();
 
