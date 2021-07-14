@@ -383,15 +383,14 @@ class PeerConnectionObserver implements PeerConnection.Observer, EventChannel.St
 
   @Override
   public void onTrack(RtpTransceiver transceiver) {
-      /*
-      ConstraintsMap params = new ConstraintsMap();
-      params.putString("event", "onTrack");
-      params.putMap("transceiver", transceiverToMap(transceiver));
-      params.putMap("receiver", rtpReceiverToMap(transceiver.getReceiver()));
-      params.putMap("track", mediaTrackToMap(transceiver.getReceiver().track()));
-      params.putArray("streams", new ConstraintsArray().toArrayList());
-      sendEvent(params);
-      */
+//      ConstraintsMap params = new ConstraintsMap();
+//      params.putString("event", "onTrack");
+//      params.putMap("transceiver", transceiverToMap(transceiver));
+//      params.putMap("receiver", rtpReceiverToMap(transceiver.getReceiver()));
+//      params.putMap("track", mediaTrackToMap(transceiver.getReceiver().track()));
+//      params.putArray("streams", new ConstraintsArray().toArrayList());
+//      sendEvent(params);
+
   }
 
   @Override

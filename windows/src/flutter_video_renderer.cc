@@ -113,6 +113,21 @@ void FlutterVideoRenderer::SetVideoTrack(scoped_refptr<RTCVideoTrack> track) {
   }
 }
 
+
+bool FlutterVideoRenderer::CheckMediaStream(std::string mediaId) {
+  if (0 == mediaId.size() || 0 == media_stream_id.size()) {
+    return false;
+  }
+  return mediaId == media_stream_id;
+}
+
+bool FlutterVideoRenderer::CheckVideoTrack(std::string mediaId) {
+  if (0 == mediaId.size() || !track_) {
+    return false;
+  }
+  return mediaId == to_std_string(track_->id());
+}
+
 FlutterVideoRendererManager::FlutterVideoRendererManager(
     FlutterWebRTCBase *base)
     : base_(base) {}
@@ -129,16 +144,17 @@ void FlutterVideoRendererManager::CreateVideoRendererTexture(
 }
 
 void FlutterVideoRendererManager::SetMediaStream(int64_t texture_id,
-                                                 const std::string &stream_id) {
-  scoped_refptr<RTCMediaStream> stream = base_->MediaStreamForId(stream_id);
-
+                                                 const std::string& stream_id) {
+  scoped_refptr<RTCMediaStream> stream =
+      base_->MediaStreamForId(stream_id);
   auto it = renderers_.find(texture_id);
   if (it != renderers_.end()) {
     FlutterVideoRenderer *renderer = it->second.get();
     if (stream.get()) {
-      VideoTrackVector tracks = stream->GetVideoTracks();
-      if (tracks.size() > 0) {
-        renderer->SetVideoTrack(tracks.at(0));
+      auto video_tracks = stream->video_tracks();
+      if (video_tracks.size() > 0) {
+        renderer->SetVideoTrack(video_tracks[0]);
+        renderer->media_stream_id = stream_id;
       }
     } else {
       renderer->SetVideoTrack(nullptr);
@@ -158,5 +174,6 @@ void FlutterVideoRendererManager::VideoRendererDispose(
   result->Error("VideoRendererDisposeFailed",
                 "VideoRendererDispose() texture not found!");
 }
+
 
 }  // namespace flutter_webrtc_plugin

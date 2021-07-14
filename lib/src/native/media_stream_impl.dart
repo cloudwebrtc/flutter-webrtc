@@ -19,23 +19,18 @@ class MediaStreamNative extends MediaStream {
   final _audioTracks = <MediaStreamTrack>[];
   final _videoTracks = <MediaStreamTrack>[];
 
-  void setMediaTracks(List<dynamic> audioTracks, List<dynamic> videoTracks) {
+  void setMediaTracks(List<dynamic>? audioTracks, List<dynamic>? videoTracks) {
     _audioTracks.clear();
-
-    if (audioTracks != null) {
-      audioTracks.forEach((track) {
-        _audioTracks.add(MediaStreamTrackNative(
-            track['id'], track['label'], track['kind'], track['enabled']));
-      });
-    }
+    audioTracks?.forEach((track) {
+      _audioTracks.add(MediaStreamTrackNative(
+          track['id'], track['label'], track['kind'], track['enabled']));
+    });
 
     _videoTracks.clear();
-    if (videoTracks != null) {
-      videoTracks.forEach((track) {
-        _videoTracks.add(MediaStreamTrackNative(
-            track['id'], track['label'], track['kind'], track['enabled']));
-      });
-    }
+    videoTracks?.forEach((track) {
+      _videoTracks.add(MediaStreamTrackNative(
+          track['id'], track['label'], track['kind'], track['enabled']));
+    });
   }
 
   @override

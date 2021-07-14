@@ -10,6 +10,6 @@ class RTCAudioSource : public RefCountInterface {
   virtual ~RTCAudioSource() {}
 };
 
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
-#endif //LIB_WEBRTC_RTC_AUDIO_TRACK_HXX
+#endif  // LIB_WEBRTC_RTC_AUDIO_TRACK_HXX

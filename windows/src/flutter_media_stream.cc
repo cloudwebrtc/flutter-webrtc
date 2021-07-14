@@ -86,18 +86,20 @@ void FlutterMediaStream::GetUserAudio(const EncodableMap& constraints,
     scoped_refptr<RTCAudioTrack> track =
         base_->factory_->CreateAudioTrack(source, uuid.c_str());
 
-    std::string track_id = track->id();
+    std::string track_id = to_std_string(track->id());
 
     EncodableMap track_info;
-    track_info[EncodableValue("id")] = track->id();
-    track_info[EncodableValue("label")] = track->id();
-    track_info[EncodableValue("kind")] = track->kind();
+    track_info[EncodableValue("id")] = to_std_string(track->id());
+    track_info[EncodableValue("label")] = to_std_string(track->id());
+    track_info[EncodableValue("kind")] = to_std_string(track->kind());
     track_info[EncodableValue("enabled")] = track->enabled();
 
     EncodableList audioTracks;
     audioTracks.push_back(EncodableValue(track_info));
     params[EncodableValue("audioTracks")] = EncodableValue(audioTracks);
     stream->AddTrack(track);
+
+    base_->local_tracks_[to_std_string(track->id())] = track;
   }
 }
 
@@ -185,13 +187,16 @@ void FlutterMediaStream::GetUserVideo(const EncodableMap& constraints,
 
   EncodableList videoTracks;
   EncodableMap info;
-  info[EncodableValue("id")] = track->id();
-  info[EncodableValue("label")] = track->id();
-  info[EncodableValue("kind")] = track->kind();
+  info[EncodableValue("id")] = to_std_string(track->id());
+  info[EncodableValue("label")] = to_std_string(track->id());
+  info[EncodableValue("kind")] = to_std_string(track->kind());
   info[EncodableValue("enabled")] = track->enabled();
   videoTracks.push_back(EncodableValue(info));
   params[EncodableValue("videoTracks")] = EncodableValue(videoTracks);
+
   stream->AddTrack(track);
+
+  base_->local_tracks_[to_std_string(track->id())] = track;
 }
 
 void FlutterMediaStream::GetSources(
@@ -246,11 +251,14 @@ void FlutterMediaStream::MediaStreamGetTracks(
   if (stream) {
     EncodableMap params;
     EncodableList audioTracks;
-    for (auto track : stream->GetAudioTracks()) {
+
+    auto audio_tracks = stream->audio_tracks();
+    for (auto track : audio_tracks) {
+      base_->local_tracks_[to_std_string(track->id())] = track;
       EncodableMap info;
-      info[EncodableValue("id")] = track->id();
-      info[EncodableValue("label")] = track->id();
-      info[EncodableValue("kind")] = track->kind();
+      info[EncodableValue("id")] = to_std_string(track->id());
+      info[EncodableValue("label")] = to_std_string(track->id());
+      info[EncodableValue("kind")] = to_std_string(track->kind());
       info[EncodableValue("enabled")] = track->enabled();
       info[EncodableValue("remote")] = true;
       info[EncodableValue("readyState")] = "live";
@@ -259,16 +267,19 @@ void FlutterMediaStream::MediaStreamGetTracks(
     params[EncodableValue("audioTracks")] = audioTracks;
 
     EncodableList videoTracks;
-    for (auto track : stream->GetVideoTracks()) {
+    auto video_tracks = stream->video_tracks();
+    for (auto track : video_tracks) {
+      base_->local_tracks_[to_std_string(track->id())] = track;
       EncodableMap info;
-      info[EncodableValue("id")] = track->id();
-      info[EncodableValue("label")] = track->id();
-      info[EncodableValue("kind")] = track->kind();
+      info[EncodableValue("id")] = to_std_string(track->id());
+      info[EncodableValue("label")] = to_std_string(track->id());
+      info[EncodableValue("kind")] = to_std_string(track->kind());
       info[EncodableValue("enabled")] = track->enabled();
       info[EncodableValue("remote")] = true;
       info[EncodableValue("readyState")] = "live";
       videoTracks.push_back(EncodableValue("info"));
     }
+
     params[EncodableValue("videoTracks")] = videoTracks;
 
     result->Success(EncodableValue("params"));
@@ -282,15 +293,17 @@ void FlutterMediaStream::MediaStreamDispose(
     const std::string& stream_id,
     std::unique_ptr<MethodResult<EncodableValue>> result) {
   scoped_refptr<RTCMediaStream> stream = base_->MediaStreamForId(stream_id);
-  AudioTrackVector audio_tracks = stream->GetAudioTracks();
-  size_t track_size = audio_tracks.size();
-  for (size_t i = 0; i < track_size; i++) {
-    stream->RemoveTrack(audio_tracks.at(i));
+  vector<scoped_refptr<RTCAudioTrack>> audio_tracks = stream->audio_tracks();
+  
+  for (auto track : audio_tracks) {
+    stream->RemoveTrack(track);
+    base_->local_tracks_.erase(to_std_string(track->id()));
   }
-  VideoTrackVector video_tracks = stream->GetVideoTracks();
-  track_size = video_tracks.size();
-  for (size_t i = 0; i < track_size; i++) {
-    stream->RemoveTrack(video_tracks.at(i));
+
+  vector<scoped_refptr<RTCVideoTrack>> video_tracks = stream->video_tracks();
+  for (auto track : video_tracks) {
+    stream->RemoveTrack(track);
+    base_->local_tracks_.erase(to_std_string(track->id()));
   }
   base_->RemoveStreamForId(stream_id);
   result->Success();

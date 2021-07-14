@@ -13,6 +13,6 @@ class RTCVideoRenderer {
   virtual void OnFrame(VideoFrameT frame) = 0;
 };
 
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
-#endif //LIB_WEBRTC_RTC_VIDEO_RENDERER_HXX
+#endif  // LIB_WEBRTC_RTC_VIDEO_RENDERER_HXX

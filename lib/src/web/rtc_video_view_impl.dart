@@ -26,6 +26,8 @@ class RTCVideoView extends StatefulWidget {
 }
 
 class _RTCVideoViewState extends State<RTCVideoView> {
+  Timer? _time;
+
   _RTCVideoViewState();
 
   RTCVideoRendererWeb get videoRenderer =>
@@ -48,6 +50,8 @@ class _RTCVideoViewState extends State<RTCVideoView> {
 
   @override
   void dispose() {
+    _time?.cancel();
+    _time = null;
     widget._renderer.delegate.removeListener(_onRendererListener);
     super.dispose();
   }
@@ -55,8 +59,11 @@ class _RTCVideoViewState extends State<RTCVideoView> {
   @override
   void didUpdateWidget(RTCVideoView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    Timer(
-        Duration(milliseconds: 10), () => videoRenderer.mirror = widget.mirror);
+    _time?.cancel();
+    _time = Timer(Duration(milliseconds: 10), () {
+      _time = null;
+      videoRenderer.mirror = widget.mirror;
+    });
     videoRenderer.objectFit =
         widget.objectFit == RTCVideoViewObjectFit.RTCVideoViewObjectFitContain
             ? 'contain'

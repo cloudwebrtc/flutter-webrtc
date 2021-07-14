@@ -12,25 +12,32 @@
 #endif
 
 #include "base/fixed_size_function.h"
+#include "base/string.h"
 #include "base/inlined_vector.h"
 #include "base/refcount.h"
 #include "base/scoped_ref_ptr.h"
 
-#ifdef WIN32
-#undef strncpy
-#define strncpy strncpy_s
-#endif
+#include <vector>
+#include <map>
 
 namespace libwebrtc {
 
+enum { kMaxIceServerSize = 8 };
+
+template <typename T>
+using vector = bsp::inlined_vector<T, 4, true>;
+
+template <typename Key, typename T>
+using map = std::map<Key, T>;
+
 enum MediaSecurityType { kSRTP_None = 0, kSDES_SRTP, kDTLS_SRTP };
 
-enum { kShortStringLength = 16, kMaxStringLength = 256, kMaxIceServerSize = 8 };
+enum class RTCMediaType { ANY, AUDIO, VIDEO, DATA };
 
 struct IceServer {
-  char uri[kMaxStringLength];
-  char username[kMaxStringLength];
-  char password[kMaxStringLength];
+  string uri;
+  string username;
+  string password;
 };
 
 enum IceTransportsType { kNone, kRelay, kNoHost, kAll };
@@ -81,13 +88,11 @@ struct RTCConfiguration {
 struct SdpParseError {
  public:
   // The sdp line that causes the error.
-  char line[kMaxStringLength];
+  string line;
   // Explains the error.
-  char description[kMaxStringLength];
+  string description;
 };
 
-#define Vector bsp::inlined_vector
-
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
 #endif  // LIB_WEBRTC_RTC_TYPES_HXX

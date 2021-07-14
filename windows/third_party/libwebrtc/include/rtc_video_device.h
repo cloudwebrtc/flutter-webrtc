@@ -22,12 +22,13 @@ class RTCVideoDevice : public RefCountInterface {
                                 char* productUniqueIdUTF8 = 0,
                                 uint32_t productUniqueIdUTF8Length = 0) = 0;
 
-  virtual scoped_refptr<RTCVideoCapturer> Create(const char* name, uint32_t index) = 0;
+  virtual scoped_refptr<RTCVideoCapturer> Create(const char* name,
+                                                 uint32_t index) = 0;
 
  protected:
   virtual ~RTCVideoDevice() {}
 };
 
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
 #endif  // LIB_WEBRTC_RTC_VIDEO_DEVICE_HXX

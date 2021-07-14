@@ -9,6 +9,6 @@ class RTCVideoSource : public RefCountInterface {
  public:
   ~RTCVideoSource() {}
 };
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
-#endif //LIB_WEBRTC_RTC_VIDEO_SOURCE_HXX
+#endif  // LIB_WEBRTC_RTC_VIDEO_SOURCE_HXX

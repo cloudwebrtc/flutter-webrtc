@@ -34,6 +34,6 @@ class RTCAudioDevice : public RefCountInterface {
   virtual ~RTCAudioDevice() {}
 };
 
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
-#endif //LIB_WEBRTC_RTC_AUDIO_DEVICE_HXX
+#endif  // LIB_WEBRTC_RTC_AUDIO_DEVICE_HXX

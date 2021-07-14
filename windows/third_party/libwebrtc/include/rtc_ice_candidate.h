@@ -7,24 +7,25 @@ namespace libwebrtc {
 
 class RTCIceCandidate : public RefCountInterface {
  public:
-  virtual const char* candidate() const = 0;
+  static LIB_WEBRTC_API scoped_refptr<RTCIceCandidate> Create(
+      const string sdp,
+      const string sdp_mid,
+      int sdp_mline_index,
+      SdpParseError* error);
 
-  virtual const char* sdp_mid() const = 0;
+ public:
+  virtual const string candidate() const = 0;
+
+  virtual const string sdp_mid() const = 0;
 
   virtual int sdp_mline_index() const = 0;
 
-  virtual bool ToString(char* buffer, int length) = 0;
+  virtual bool ToString(string& out) = 0;
 
  protected:
   virtual ~RTCIceCandidate() {}
 };
 
-LIB_WEBRTC_API scoped_refptr<RTCIceCandidate> CreateRTCIceCandidate(
-    const char* sdp,
-    const char* sdp_mid,
-    int sdp_mline_index,
-    SdpParseError* error);
-
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
 #endif  // LIB_WEBRTC_RTC_ICE_CANDIDATE_HXX

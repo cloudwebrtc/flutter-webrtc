@@ -17,7 +17,7 @@ struct RTCDataChannelInit {
   bool reliable = true;
   int maxRetransmitTime = -1;
   int maxRetransmits = -1;
-  char protocol[kMaxStringLength] = {"sctp"};  // sctp | quic
+  string protocol = {"sctp"};  // sctp | quic
   bool negotiated = false;
   int id = 0;
 };
@@ -34,7 +34,7 @@ class RTCDataChannelObserver {
 
 class RTCDataChannel : public RefCountInterface {
  public:
-  virtual void Send(const char *data, int length, bool binary = false) = 0;
+  virtual void Send(const string data, bool binary = false) = 0;
 
   virtual void Close() = 0;
 
@@ -42,7 +42,7 @@ class RTCDataChannel : public RefCountInterface {
 
   virtual void UnregisterObserver() = 0;
 
-  virtual const char* label() const = 0;
+  virtual const string label() const = 0;
 
   virtual int id() const = 0;
 
@@ -52,6 +52,6 @@ class RTCDataChannel : public RefCountInterface {
   virtual ~RTCDataChannel() {}
 };
 
-};  // namespace libwebrtc
+}  // namespace libwebrtc
 
 #endif  // LIB_WEBRTC_RTC_DATA_CHANNEL_HXX
